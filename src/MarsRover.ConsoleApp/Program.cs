@@ -17,7 +17,14 @@ MMRMMRMRRM
 Expected Output:
 1 3 N
 5 1 E   
-        */
+
+5 5
+3 3 E 
+MRMMRMMRMMRM
+0 0 N
+MMMMMRMMMMMRMMMMMRMMMMMR
+        
+         */
         static void Main(string[] args)
         {
             Console.Write("Plateau size : ");
@@ -33,7 +40,8 @@ Expected Output:
                 var roverX = Convert.ToInt32(roverStatusInput.Split(' ')[0]);
                 var roverY = Convert.ToInt32(roverStatusInput.Split(' ')[1]);
                 var roverDirection = Enum.Parse<Direction>(roverStatusInput.Split(' ')[2]);
-                var rover = new Rover(plateau, roverDirection, roverX, roverY);
+                var roverStatus = new Status(roverX, roverY, roverDirection);
+                var rover = new Rover(plateau, roverStatus);
 
                 Console.Write("Actions : ");
                 var actionsInput = Console.ReadLine();

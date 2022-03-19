@@ -7,16 +7,20 @@ namespace MarsRover.Lib
         private Status status;
         private readonly Plateau plateau;
 
-        public Rover(Plateau plateau, Direction direction, int x, int y)
+        public Rover(Plateau plateau, Status status)
         {
             this.plateau = plateau;
-            this.status = new Status(x, y, direction);
+            if(!IsValidForPlateau(status.X, status.Y))
+            {
+                throw new ArgumentException($"Invalid status for rover to start : {status}");
+            }
+            this.status = status;
         }
 
         public void Move(RoverAction action)
         {
             var nextStatus = NextStatus(action);
-            if (!CanMoveOnPlateau(nextStatus.X, nextStatus.Y))
+            if (!IsValidForPlateau(nextStatus.X, nextStatus.Y))
             {
                 throw new Exception($"Couldn't move : {action}");
             }
@@ -28,9 +32,9 @@ namespace MarsRover.Lib
             return status;
         }
 
-        private bool CanMoveOnPlateau(int nextX, int nextY)
+        private bool IsValidForPlateau(int x, int y)
         {
-            if (nextX < 0 || nextY < 0 || nextX > plateau.Width || nextY > plateau.Height)
+            if (x < 0 || y < 0 || x > plateau.Width || y > plateau.Height)
             {
                 return false;
             }
