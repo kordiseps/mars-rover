@@ -30,7 +30,7 @@ namespace MarsRover.Lib.Tests
         public void Should_Throw_Exception(Plateau plateau, Status roverStatus)
         {
 
-            Action act = () => new Rover(plateau, roverStatus);
+            void act() => new Rover(plateau, roverStatus);
 
             ArgumentException exception = Assert.Throws<ArgumentException>(act);
 
@@ -48,7 +48,7 @@ namespace MarsRover.Lib.Tests
             yield return new object[] { plateau, new Status(-1, -1, Direction.W) };
         }
 
-         
+
         /////////////////////////////// SHOULD MOVE ON PLATEAU ///////////////////////////// 
         [Theory]
         [MemberData(nameof(Get_Params_For_Should_Move_On_Plateau))]
@@ -133,9 +133,60 @@ namespace MarsRover.Lib.Tests
             /*Go on boundary: 0,0,N => M,M,M,M,M,R,M,M,M,M,M,R,M,M,M,M,M,R,M,M,M,M,M,R*/
             moves = new[] { RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.R, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.R, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.R, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.M, RoverAction.R, };
             beginningStatus = new Status(0, 0, Direction.N);
-            yield return new object[] { plateau, new Status(0, 0, Direction.N), moves, beginningStatus };
+            yield return new object[] { plateau, beginningStatus, moves, beginningStatus };
 
         }
+
+
+        /////////////////////////////// SHOULDN'T MOVE ON PLATEAU ///////////////////////////// 
+        [Theory]
+        [MemberData(nameof(Get_Params_For_Shouldnt_Move_On_Plateau))]
+        public void Shouldnt_Move_On_Plateau(Plateau plateau, Status roverStatus, RoverAction action)
+        {
+            var rover = new Rover(plateau, roverStatus);
+            Assert.NotNull(rover);
+
+            void act() => rover.Move(action);
+
+            ArgumentException exception = Assert.Throws<ArgumentException>(act);
+
+            Assert.NotNull(exception.Message);
+            Assert.StartsWith("Invalid action for rover to move", exception.Message);
+        }
+
+        public static IEnumerable<object[]> Get_Params_For_Shouldnt_Move_On_Plateau()
+        {
+            var plateau = new Plateau(5, 5);
+
+            //left boundary
+            var xStart = 0;
+            for (int y = 0; y < plateau.Height; y++)
+            {
+                yield return new object[] { plateau, new Status(xStart, y, Direction.W), RoverAction.M };
+            }
+
+            //right boundary
+            var xEnd = plateau.Width;
+            for (int y = 0; y < plateau.Height; y++)
+            {
+                yield return new object[] { plateau, new Status(xEnd, y, Direction.E), RoverAction.M };
+            }
+
+            //bottom boundary
+            var yStart = 0;
+            for (int x = 0; x < plateau.Width; x++)
+            {
+                yield return new object[] { plateau, new Status(x, yStart, Direction.S), RoverAction.M };
+            }
+
+            //top boundary
+            var yEnd = plateau.Height;
+            for (int x = 0; x < plateau.Width; x++)
+            {
+                yield return new object[] { plateau, new Status(x, yEnd, Direction.N), RoverAction.M };
+            }
+        }
+
     }
 
 }
