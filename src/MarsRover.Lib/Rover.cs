@@ -22,7 +22,7 @@ namespace MarsRover.Lib
             var nextStatus = NextStatus(action);
             if (!IsValidForPlateau(nextStatus.X, nextStatus.Y))
             {
-                throw new Exception($"Couldn't move : {action}");
+                throw new ArgumentException($"Invalid action for rover to move : {action}");
             }
             status = nextStatus;
         }
